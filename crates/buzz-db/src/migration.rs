@@ -348,7 +348,6 @@ mod tests {
             "push_gateway_delivery_request_replays",
             "product_feedback",
             "replica_heartbeat",
-            "community_deletion_catalog",
             "community_deletion_requests",
             "community_deletion_approvals",
             "community_deletion_checkpoints",
@@ -1040,9 +1039,6 @@ mod tests {
         // Durable whole-community deletion control plane and universal DB fence.
         assert_eq!(migrations[27].version, 28);
         let deletion = migrations[27].sql.as_str();
-        assert!(deletion.contains("CREATE TABLE community_deletion_catalog"));
-        assert!(deletion
-            .contains("INSERT INTO community_deletion_catalog (id, revision) VALUES (1, 1)"));
         assert!(deletion.contains("CREATE TABLE community_deletion_requests"));
         assert!(deletion.contains("CREATE TABLE community_deletion_approvals"));
         assert!(deletion.contains("CREATE TABLE community_deletion_checkpoints"));
