@@ -1127,6 +1127,14 @@ INSERT INTO _operator_global_tables (table_name, reason) VALUES
     ('replica_heartbeat', 'single-row replication freshness token; describes deployment topology, never tenant data');
 
 -- ── Whole-community deletion control plane (migration 0028) ─────────────────
+-- Compatibility capability for the destructive deletion engine. Advance this
+-- only when the deletion catalog contract changes, never for unrelated SQLx migrations.
+CREATE TABLE community_deletion_catalog (
+    id SMALLINT PRIMARY KEY CHECK (id = 1),
+    revision INTEGER NOT NULL CHECK (revision > 0)
+);
+INSERT INTO community_deletion_catalog (id, revision) VALUES (1, 1);
+
 CREATE TABLE community_deletion_requests (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     community_id UUID NOT NULL UNIQUE REFERENCES communities(id),
@@ -1277,6 +1285,7 @@ CREATE TABLE community_deletion_executor_heartbeats (
     stopped_at TIMESTAMPTZ
 );
 INSERT INTO _operator_global_tables (table_name, reason) VALUES
+    ('community_deletion_catalog', 'deletion-specific schema compatibility capability'),
     ('community_deletion_requests', 'deployment deletion lifecycle and frozen inventory'),
     ('community_deletion_approvals', 'deployment operator destructive approvals'),
     ('community_deletion_checkpoints', 'deployment deletion executor checkpoints and failures'),
